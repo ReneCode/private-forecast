@@ -6,7 +6,6 @@ import {
   getUser,
   storeForecast,
 } from "./utils";
-const firebase = require("firebase");
 
 const sendforecast = async (req: NowRequest, res: NowResponse) => {
   try {
