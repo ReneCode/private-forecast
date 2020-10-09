@@ -29,7 +29,10 @@ const sendforecast = async (req: NowRequest, res: NowResponse) => {
     } else {
       const newId = await createUser(db, name);
       if (!newId) {
-        res.send(`can't create user ${name} - choose different name`);
+        res.status(404).json({
+          code: 1,
+          msg: `can't create user ${name} - choose different name`,
+        });
         return;
       } else {
         userId = newId;
@@ -59,7 +62,7 @@ const sendforecast = async (req: NowRequest, res: NowResponse) => {
     //   gender: "male",
     // });
 
-    res.send(`ok, well done. userId ${userId}`);
+    res.status(200).json({ code: 0, id: userId, msg: "ok" });
   } catch (err) {
     res.send(`Error: ${err}`);
   }
