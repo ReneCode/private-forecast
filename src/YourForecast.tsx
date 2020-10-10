@@ -46,6 +46,7 @@ const YourForecast = () => {
       console.log(">>", result);
       localStorage.setItem(LOCAL_STORAGE_KEY_NAME, name);
       localStorage.setItem(LOCAL_STORAGE_KEY_ID, result.id);
+      setUserId(result.id);
     } catch (err) {
       // setError(err.msg);
       console.error(err);

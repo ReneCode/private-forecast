@@ -3,9 +3,9 @@ import { nanoid } from "nanoid";
 
 let fireStoreDatabase = null;
 
-export const getDateNow = () => {
-  const dt = new Date(Date.now());
-  return `${dt.getUTCFullYear()}-${dt.getUTCMonth()}-${dt.getUTCDay()}`;
+export const getDateNow = (dayDelta: number = 0) => {
+  const dt = new Date(Date.now() + 24 * 60 * 60 * 1000 * dayDelta);
+  return `${dt.getUTCFullYear()}-${dt.getUTCMonth() + 1}-${dt.getUTCDate()}`;
 };
 
 export const getFireStore = () => {
@@ -36,10 +36,6 @@ export const getFireStore = () => {
   const db = admin.firestore();
   fireStoreDatabase = db;
   return db;
-};
-
-const getFireStoreCollection = (db: FirebaseFirestore.Firestore) => {
-  return db.collection(process.env.STAGE);
 };
 
 const collection = (db: FirebaseFirestore.Firestore, name: string) => {
@@ -117,5 +113,32 @@ export const storeForecast = async (
       return await createForecast(db, docId, userId, forecast);
     }
     return `${JSON.stringify(err)}`;
+  }
+};
+
+export const storeFact = async (
+  db: FirebaseFirestore.Firestore,
+  docId: string,
+  data: {}
+) => {
+  try {
+    const timestamp = new Date(Date.now());
+    const realityRef = collection(db, "fact").doc(docId);
+    const setData = { ...data, id: docId, ts: timestamp };
+    await realityRef.set(setData);
+    return true;
+  } catch (err) {
+    return false;
+  }
+};
+
+export const getHost = () => {
+  switch (process.env.STAGE) {
+    case "DEV":
+      return "http://localhost:3000";
+    case "PREVIEW":
+      return "https://private-forecast.relang.vercel.app";
+    case "PROD":
+      return "https://private-forecast.vercel.app";
   }
 };
