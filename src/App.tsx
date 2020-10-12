@@ -7,7 +7,7 @@ function App() {
   return (
     <div className="App">
       <h1>private forecast</h1>
-      <CurrentNumber />
+      {/* <CurrentNumber /> */}
       <YourForecast />
     </div>
   );

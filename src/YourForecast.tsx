@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import "./YourForecast.css";
+import "./YourForecast.scss";
 
 const LOCAL_STORAGE_KEY_NAME = "private-forecast-name";
 const LOCAL_STORAGE_KEY_ID = "private-forecast-id";
@@ -17,7 +17,7 @@ const YourForecast = () => {
       setName(name);
     }
     const id = localStorage.getItem(LOCAL_STORAGE_KEY_ID);
-    if (id && id != "undefined") {
+    if (id && id !== "undefined") {
       setUserId(id);
     }
   }, []);
@@ -28,7 +28,7 @@ const YourForecast = () => {
     }
 
     try {
-      const url = "/api/sendforecast";
+      const url = "/api/makeforecast";
       const body = {
         id: userId,
         name: name,
@@ -43,22 +43,34 @@ const YourForecast = () => {
         body: JSON.stringify(body),
       });
       const result = await response.json();
-      console.log(">>", result);
-      localStorage.setItem(LOCAL_STORAGE_KEY_NAME, name);
-      localStorage.setItem(LOCAL_STORAGE_KEY_ID, result.id);
-      setUserId(result.id);
+      if (response.ok) {
+        setError("");
+        if (!userId) {
+          localStorage.setItem(LOCAL_STORAGE_KEY_NAME, name);
+          localStorage.setItem(LOCAL_STORAGE_KEY_ID, result.id);
+          setUserId(result.id);
+        }
+      } else if (result.code === 3) {
+        setError(result.msg);
+        // set Focus to name
+      } else {
+        setError(result.msg);
+      }
     } catch (err) {
-      // setError(err.msg);
+      setError(err);
+
+      console.log(">>", err);
       console.error(err);
     }
   };
 
   return (
-    <div>
+    <div className="form">
       {error && <div>{error}</div>}
       <div className="input">
         <h2>Your forcast</h2>
 
+        {error && <p>{error}</p>}
         <label htmlFor="name">Name:</label>
         <input
           id="name"

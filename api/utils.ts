@@ -8,6 +8,10 @@ export const getDateNow = (dayDelta: number = 0) => {
   return `${dt.getUTCFullYear()}-${dt.getUTCMonth() + 1}-${dt.getUTCDate()}`;
 };
 
+export const shiftDate = (dt: Date, dayDelta: number) => {
+  return new Date(dt.getTime() + dayDelta * 24 * 60 * 60 * 1000);
+};
+
 export const getFireStore = () => {
   if (fireStoreDatabase) {
     return fireStoreDatabase;
@@ -116,7 +120,7 @@ export const storeForecast = async (
   }
 };
 
-export const storeFact = async (
+export const createFact = async (
   db: FirebaseFirestore.Firestore,
   docId: string,
   data: {}
@@ -125,7 +129,7 @@ export const storeFact = async (
     const timestamp = new Date(Date.now());
     const realityRef = collection(db, "fact").doc(docId);
     const setData = { ...data, id: docId, ts: timestamp };
-    await realityRef.set(setData);
+    await realityRef.create(setData);
     return true;
   } catch (err) {
     return false;
