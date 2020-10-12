@@ -1,6 +1,8 @@
 import * as admin from "firebase-admin";
 import { nanoid } from "nanoid";
 
+export const FACT_ID = "FACT";
+
 let fireStoreDatabase = null;
 
 export const getDateNow = (dayDelta: number = 0) => {
@@ -82,57 +84,42 @@ export const createUser = async (
   }
 };
 
-const createForecast = async (
+const createData = async (
   db: FirebaseFirestore.Firestore,
+  dateId: string,
   docId: string,
-  userId: string,
-  forecast: number
-) => {
-  try {
-    const forecastRef = collection(db, "forecast").doc(docId);
-    const setData = {};
-    setData[userId] = forecast;
-    await forecastRef.set(setData);
-    return true;
-  } catch (err) {
-    return false;
-  }
-};
-
-export const storeForecast = async (
-  db: FirebaseFirestore.Firestore,
-  docId: string,
-  userId: string,
-  forecast: number
-) => {
-  try {
-    const forecastRef = collection(db, "forecast").doc(docId);
-    const updateData = {};
-    updateData[userId] = forecast;
-    await forecastRef.update(updateData);
-    return true;
-  } catch (err) {
-    if (err.code == 5) {
-      // document not found
-      return await createForecast(db, docId, userId, forecast);
-    }
-    return `${JSON.stringify(err)}`;
-  }
-};
-
-export const createFact = async (
-  db: FirebaseFirestore.Firestore,
-  docId: string,
-  data: {}
+  data: object
 ) => {
   try {
     const timestamp = new Date(Date.now());
-    const realityRef = collection(db, "fact").doc(docId);
-    const setData = { ...data, id: docId, ts: timestamp };
-    await realityRef.create(setData);
+    const dataRef = collection(db, dateId).doc(docId);
+    await dataRef.create({ ts: timestamp, ...data });
     return true;
   } catch (err) {
-    return false;
+    return null;
+  }
+};
+
+export const saveData = async (
+  db: FirebaseFirestore.Firestore,
+  dateId: string,
+  docId: string,
+  data: object
+) => {
+  try {
+    const timestamp = new Date(Date.now());
+    const dataRef = collection(db, dateId).doc(docId);
+    await dataRef.update({ ts: timestamp, ...data });
+    return { created: false };
+  } catch (err) {
+    if (err.code === 5) {
+      // document not found
+      const ok = await createData(db, dateId, docId, data);
+      if (ok) {
+        return { created: true };
+      }
+    }
+    return null;
   }
 };
 

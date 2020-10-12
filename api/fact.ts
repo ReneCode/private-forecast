@@ -3,14 +3,14 @@ import {
   getFireStore,
   getHost,
   shiftDate,
-  createFact,
   createReport,
+  saveData,
+  FACT_ID,
 } from "./utils";
 import fetch from "node-fetch";
 
 const fact = async (req: NowRequest, res: NowResponse) => {
   try {
-    console.log(">>", req.method);
     if (req.method !== "POST") {
       res.status(404).send("");
       return;
@@ -42,7 +42,7 @@ const fact = async (req: NowRequest, res: NowResponse) => {
     const [_, day, month, year] = /(\d*)\.(\d*)\.(\d*)/.exec(rkiDate);
     const dateOfData = new Date(parseInt(year), parseInt(month), parseInt(day));
     const prevDate = shiftDate(dateOfData, -1);
-    const docId = `${prevDate.getFullYear()}-${prevDate.getMonth()}-${prevDate.getDate()}`;
+    const dateId = `${prevDate.getFullYear()}-${prevDate.getMonth()}-${prevDate.getDate()}`;
 
     // take nr from website
     const delta = result[2].replace("+", "").replace(".", "");
@@ -51,20 +51,19 @@ const fact = async (req: NowRequest, res: NowResponse) => {
     const stage = process.env.STAGE;
 
     const db = getFireStore();
-    const created = await createFact(db, docId, {
+    const { created } = await saveData(db, dateId, FACT_ID, {
       nr,
       stage,
-      rkiDate: rkiDate,
+      rkiDate,
     });
-
     if (created) {
-      createReport(db, docId);
+      createReport(db, dateId);
     }
 
     res.status(200).json({
       code: 0,
       stage,
-      docId,
+      docId: dateId,
       nr,
       rkiDate,
       msg: "ok",

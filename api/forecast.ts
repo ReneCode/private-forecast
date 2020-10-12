@@ -4,7 +4,7 @@ import {
   getDateNow,
   getFireStore,
   getUser,
-  storeForecast,
+  saveData,
 } from "./utils";
 
 const forecast = async (req: NowRequest, res: NowResponse) => {
@@ -46,10 +46,15 @@ const forecast = async (req: NowRequest, res: NowResponse) => {
       return;
     }
 
-    const docId = getDateNow();
+    const dateId = getDateNow();
 
-    const ok = await storeForecast(db, docId, userId, forecastNr);
-    if (!ok) {
+    // const ok = await storeForecast(db, docId, userId, forecastNr);
+    const result = await saveData(db, dateId, userId, {
+      name: name,
+      nr: forecastNr,
+    });
+
+    if (!result) {
       res.status(400).json({ code: 1, msg: `can't store forecast. try again` });
       return;
     }
