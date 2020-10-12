@@ -146,3 +146,8 @@ export const getHost = () => {
       return "https://private-forecast.vercel.app";
   }
 };
+
+export const createReport = (
+  db: FirebaseFirestore.Firestore,
+  docId: string
+) => {};

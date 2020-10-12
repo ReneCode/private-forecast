@@ -28,7 +28,7 @@ const YourForecast = () => {
     }
 
     try {
-      const url = "/api/makeforecast";
+      const url = "/api/forecast";
       const body = {
         id: userId,
         name: name,

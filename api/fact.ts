@@ -1,5 +1,11 @@
 import { NowRequest, NowResponse } from "@vercel/node";
-import { getFireStore, getHost, shiftDate, createFact } from "./utils";
+import {
+  getFireStore,
+  getHost,
+  shiftDate,
+  createFact,
+  createReport,
+} from "./utils";
 import fetch from "node-fetch";
 
 const fact = async (req: NowRequest, res: NowResponse) => {
@@ -50,6 +56,10 @@ const fact = async (req: NowRequest, res: NowResponse) => {
       stage,
       rkiDate: rkiDate,
     });
+
+    if (created) {
+      createReport(db, docId);
+    }
 
     res.status(200).json({
       code: 0,
