@@ -31,7 +31,11 @@ function App() {
     <div className="App">
       {/* <h1>private forecast</h1> */}
       {/* <CurrentNumber /> */}
-      <YourForecast user={user} saveUser={(user) => onSaveUser(user)} />
+      <YourForecast
+        user={user}
+        dateId={dateToDateId(getDate())}
+        saveUser={(user) => onSaveUser(user)}
+      />
       <Summarize
         dateId={dateToDateId(getDate(-1))}
         title="Vortag"

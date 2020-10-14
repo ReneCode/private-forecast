@@ -5,13 +5,30 @@ import "./YourForecast.scss";
 
 type Props = {
   user: UserType;
+  dateId: string;
   saveUser: (user: UserType) => void;
 };
-const YourForecast: React.FC<Props> = ({ user, saveUser }) => {
-  // const [userId, setUserId] = useState("");
+const YourForecast: React.FC<Props> = ({ user, dateId, saveUser }) => {
   const [name, setName] = useState("");
   const [forecast, setForecast] = useState(0);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (dateId && user.id) {
+      const loadForecast = async () => {
+        const query = new URLSearchParams({ dateId: dateId, userId: user.id });
+        const url = `/api/forecast?${query}`;
+        const response = await fetch(url);
+        if (response.ok) {
+          const doc = await response.json();
+          if (doc && doc.nr) {
+            setForecast(doc.nr);
+          }
+        }
+      };
+      loadForecast();
+    }
+  }, [dateId, user]);
 
   useEffect(() => {
     setName(user.name);
