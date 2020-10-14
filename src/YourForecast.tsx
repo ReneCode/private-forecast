@@ -66,30 +66,32 @@ const YourForecast = () => {
 
   return (
     <div className="form">
-      {error && <div>{error}</div>}
-      <div className="input">
-        <h2>Your forcast</h2>
-
-        {error && <p>{error}</p>}
-        <label htmlFor="name">Name:</label>
-        <input
-          id="name"
-          type="text"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
+      <h2>Meine Prognose</h2>
+      <div className="inset">
+        {error && <div>{error}</div>}
+        <p>
+          <label htmlFor="name">Name:</label>
+          <input
+            id="name"
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        </p>
+        <p>
+          <label htmlFor="forecast">Neuinfektionen zum Vortag:</label>
+          <input
+            id="forecast"
+            type="number"
+            value={forecast}
+            onChange={(e) => setForecast(parseInt(e.target.value))}
+          />
+        </p>
       </div>
-      <div className="input">
-        <label htmlFor="forecast">Forecast:</label>
-        <input
-          id="forecast"
-          type="number"
-          value={forecast}
-          onChange={(e) => setForecast(parseInt(e.target.value))}
-        />
-      </div>
 
-      <button onClick={handleClick}>Send</button>
+      <div className="action">
+        <button onClick={handleClick}>Send</button>
+      </div>
     </div>
   );
 };

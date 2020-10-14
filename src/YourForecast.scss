@@ -1,21 +1,52 @@
-_body {
-  background: lighten(#474747, 10%)
-    url(https://images.unsplash.com/photo-1452716726610-30ed68426a6b?ixlib=rb-0.3.5&q=80&fm=jpg&crop=entropy&w=1080&fit=max&s=177c2914fe84d20069f207e27632acc9)
-    center/cover no-repeat;
-  height: 100vh;
-  overflow: hidden;
-  color: #fff;
-  font-family: Arial, Helvetica, sans-serif;
+* {
+  box-sizing: border-box;
+  &:focus {
+    outline: none;
+  }
 }
 
-._form {
-  background: rgba(#474747, 0.8);
+.form {
+  background: rgba(#bbb, 0.8);
+  position: relative;
+  width: 300px;
+  margin: 50px auto;
+  border: 1px solid #888;
+  box-shadow: 0 5px 10px 5px rgba(100, 100, 100, 0.5);
+  font-size: 1.2rem;
 
-  .input {
-    margin: 20px;
+  h2 {
+    padding: 15px 0;
+    margin: 0;
+    text-align: center;
   }
 
-  button {
-    width: 200px;
+  .inset {
+    border-top: 1px solid #aaa;
+    padding: 0px 10px;
+    label {
+      display: block;
+      margin: 5px 0;
+    }
+    input {
+      width: 100%;
+      padding: 8px 5px;
+      font-size: 1.2rem;
+    }
+  }
+  .action {
+    margin: 30px 0 20px;
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    button {
+      border: 1px solid rgba(100, 250, 100, 0.7);
+      background-color: rgba(100, 250, 100, 0.5);
+      font-size: 1.2rem;
+      width: 200px;
+      padding: 5px 20px;
+      &:hover {
+        cursor: pointer;
+      }
+    }
   }
 }
