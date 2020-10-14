@@ -1,0 +1,56 @@
+.App {
+  font-size: 16px;
+}
+
+* {
+  box-sizing: border-box;
+  &:focus {
+    outline: none;
+  }
+}
+
+.form {
+  background: rgba(#bbb, 0.8);
+  position: relative;
+  width: 300px;
+  margin: 50px auto;
+  border: 1px solid #888;
+  box-shadow: 0 5px 10px 5px rgba(100, 100, 100, 0.5);
+  font-size: 1.2rem;
+
+  h2 {
+    padding: 15px 0;
+    margin: 0;
+    text-align: center;
+  }
+
+  .inset {
+    border-top: 1px solid #aaa;
+    padding: 0px 10px;
+    label {
+      display: block;
+      margin: 5px 0;
+    }
+    input {
+      width: 100%;
+      padding: 8px 5px;
+      font-size: 1.2rem;
+    }
+  }
+  .action {
+    margin: 30px 0 20px;
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    button {
+      border: 1px solid rgba(100, 250, 100, 0.7);
+      background-color: rgba(100, 250, 100, 0.5);
+      font-size: 1.2rem;
+      width: 200px;
+      padding: 5px 20px;
+      &:hover {
+        cursor: pointer;
+      }
+    }
+  }
+}

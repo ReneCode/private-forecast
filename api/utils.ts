@@ -3,7 +3,11 @@ import { nanoid } from "nanoid";
 
 export const FACT_ID = "FACT";
 
-let fireStoreDatabase = null;
+let fireStoreDatabase: FirebaseFirestore.Firestore = null;
+
+const collection = (db: FirebaseFirestore.Firestore, name: string) => {
+  return db.collection(`${process.env.STAGE}/d/${name}`);
+};
 
 export const getDateNow = (dayDelta: number = 0) => {
   const dt = new Date(Date.now() + 24 * 60 * 60 * 1000 * dayDelta);
@@ -42,10 +46,6 @@ export const getFireStore = () => {
   const db = admin.firestore();
   fireStoreDatabase = db;
   return db;
-};
-
-const collection = (db: FirebaseFirestore.Firestore, name: string) => {
-  return db.collection(`${process.env.STAGE}/d/${name}`);
 };
 
 export const getUser = async (
@@ -119,6 +119,24 @@ export const saveData = async (
         return { created: true };
       }
     }
+    return null;
+  }
+};
+
+export const loadData = async (
+  db: FirebaseFirestore.Firestore,
+  dateId: string,
+  docId: string
+) => {
+  try {
+    const dataRef = collection(db, dateId).doc(docId);
+    const doc = await dataRef.get();
+    if (!doc.exists) {
+      return null;
+    }
+    return doc.data();
+  } catch (err) {
+    console.log(`loadData: ${err}`);
     return null;
   }
 };

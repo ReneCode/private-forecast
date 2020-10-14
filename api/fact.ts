@@ -6,71 +6,90 @@ import {
   createReport,
   saveData,
   FACT_ID,
+  loadData,
 } from "./utils";
 import fetch from "node-fetch";
+import qs from "qs";
 
 const fact = async (req: NowRequest, res: NowResponse) => {
   try {
-    if (req.method !== "POST") {
-      res.status(404).send("");
-      return;
+    switch (req.method) {
+      case "POST":
+        return postFact(req, res);
+      case "GET":
+        return getFact(req, res);
+      default:
+        res.send(404).send(null);
     }
-
-    const apiUrl = getHost();
-    const url = `${apiUrl}/api/grabhtml`;
-    const body = {
-      url:
-        "https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Fallzahlen.html",
-      regex: [
-        "<p>Stand: (.*) \\(online aktualisiert.*",
-        ".*Gesamt.*<\\/td>.*<strong>(.*)<\\/strong>.*<strong>(.*)<\\/strong>.*<strong>(.*)<\\/strong>.*<strong>(.*)<\\/strong>.*.*<strong>(.*)<\\/strong>.*<\\/tbody>",
-      ],
-    };
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(body),
-    });
-    const result = await response.json();
-
-    // take date from website
-    // "17.10.2020"
-    // store as previous day => "2020-10-16"
-    const rkiDate = result[0];
-    const [_, day, month, year] = /(\d*)\.(\d*)\.(\d*)/.exec(rkiDate);
-    const dateOfData = new Date(parseInt(year), parseInt(month), parseInt(day));
-    const prevDate = shiftDate(dateOfData, -1);
-    const dateId = `${prevDate.getFullYear()}-${prevDate.getMonth()}-${prevDate.getDate()}`;
-
-    // take nr from website
-    const delta = result[2].replace("+", "").replace(".", "");
-    const nr = parseInt(delta);
-
-    const stage = process.env.STAGE;
-
-    const db = getFireStore();
-    const { created } = await saveData(db, dateId, FACT_ID, {
-      nr,
-      stage,
-      rkiDate,
-    });
-    if (created) {
-      createReport(db, dateId);
-    }
-
-    res.status(200).json({
-      code: 0,
-      stage,
-      docId: dateId,
-      nr,
-      rkiDate,
-      msg: "ok",
-      created,
-    });
   } catch (err) {
     res.send(`Error: ${err}`);
+  }
+};
+
+const postFact = async (req: NowRequest, res: NowResponse) => {
+  const apiUrl = getHost();
+  const url = `${apiUrl}/api/grabhtml`;
+  const body = {
+    url:
+      "https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Fallzahlen.html",
+    regex: [
+      "<p>Stand: (.*) \\(online aktualisiert.*",
+      ".*Gesamt.*<\\/td>.*<strong>(.*)<\\/strong>.*<strong>(.*)<\\/strong>.*<strong>(.*)<\\/strong>.*<strong>(.*)<\\/strong>.*.*<strong>(.*)<\\/strong>.*<\\/tbody>",
+    ],
+  };
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+  const result = await response.json();
+
+  // take date from website
+  // "17.10.2020"
+  // store as previous day => "2020-10-16"
+  const rkiDate = result[0];
+  const [_, day, month, year] = /(\d*)\.(\d*)\.(\d*)/.exec(rkiDate);
+  const dateOfData = new Date(parseInt(year), parseInt(month), parseInt(day));
+  const prevDate = shiftDate(dateOfData, -1);
+  const dateId = `${prevDate.getFullYear()}-${prevDate.getMonth()}-${prevDate.getDate()}`;
+
+  // take nr from website
+  const delta = result[2].replace("+", "").replace(".", "");
+  const nr = parseInt(delta);
+
+  const stage = process.env.STAGE;
+
+  const db = getFireStore();
+  const { created } = await saveData(db, dateId, FACT_ID, {
+    nr,
+    stage,
+    rkiDate,
+  });
+  if (created) {
+    createReport(db, dateId);
+  }
+
+  res.status(200).json({
+    code: 0,
+    stage,
+    docId: dateId,
+    nr,
+    rkiDate,
+    msg: "ok",
+    created,
+  });
+};
+
+const getFact = async (req: NowRequest, res: NowResponse) => {
+  const db = getFireStore();
+  const dateId = req.query.dateId as string;
+  if (dateId) {
+    const doc = await loadData(db, dateId, FACT_ID);
+    res.json(doc);
+  } else {
+    res.status(404).send(null);
   }
 };
 

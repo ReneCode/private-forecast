@@ -1,19 +1,21 @@
-import React from "react";
-import "./App.css";
+import React, { useEffect, useState } from "react";
+import "./App.scss";
 import CurrentNumber from "./CurrentNumber";
 import Summarize from "./Summarize";
-import { getDate } from "./utils";
+import { dateToDateId, getDate } from "./utils";
 import YourForecast from "./YourForecast";
 
 function App() {
-  const currentDate = getDate();
+  const [user, setUser] = useState({ id: "", name: "" });
+
+  useEffect(() => {});
 
   return (
     <div className="App">
       {/* <h1>private forecast</h1> */}
       {/* <CurrentNumber /> */}
-      <Summarize />
       <YourForecast />
+      <Summarize dateId={dateToDateId(getDate(-1))} title="Vortag" />
     </div>
   );
 }
