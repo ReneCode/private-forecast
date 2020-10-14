@@ -9,15 +9,16 @@ import {
   loadData,
 } from "./utils";
 import fetch from "node-fetch";
-import qs from "qs";
 
 const fact = async (req: NowRequest, res: NowResponse) => {
   try {
     switch (req.method) {
       case "POST":
-        return postFact(req, res);
+        await postFact(req, res);
+        break;
       case "GET":
-        return getFact(req, res);
+        await getFact(req, res);
+        break;
       default:
         res.send(404).send(null);
     }
@@ -83,13 +84,17 @@ const postFact = async (req: NowRequest, res: NowResponse) => {
 };
 
 const getFact = async (req: NowRequest, res: NowResponse) => {
-  const db = getFireStore();
   const dateId = req.query.dateId as string;
   if (dateId) {
+    const db = getFireStore();
     const doc = await loadData(db, dateId, FACT_ID);
-    res.json(doc);
+    if (doc) {
+      res.json({ nr: doc.nr });
+    } else {
+      res.status(404).send(null);
+    }
   } else {
-    res.status(404).send(null);
+    res.status(400).send(null);
   }
 };
 

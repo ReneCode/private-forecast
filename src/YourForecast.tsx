@@ -1,26 +1,21 @@
 import React, { useEffect, useState } from "react";
+import { UserType } from "./utils";
 
 import "./YourForecast.scss";
 
-const LOCAL_STORAGE_KEY_NAME = "private-forecast-name";
-const LOCAL_STORAGE_KEY_ID = "private-forecast-id";
-
-const YourForecast = () => {
-  const [userId, setUserId] = useState("");
+type Props = {
+  user: UserType;
+  saveUser: (user: UserType) => void;
+};
+const YourForecast: React.FC<Props> = ({ user, saveUser }) => {
+  // const [userId, setUserId] = useState("");
   const [name, setName] = useState("");
   const [forecast, setForecast] = useState(0);
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const name = localStorage.getItem(LOCAL_STORAGE_KEY_NAME);
-    if (name) {
-      setName(name);
-    }
-    const id = localStorage.getItem(LOCAL_STORAGE_KEY_ID);
-    if (id && id !== "undefined") {
-      setUserId(id);
-    }
-  }, []);
+    setName(user.name);
+  }, [user]);
 
   const handleClick = async () => {
     if (!name) {
@@ -30,7 +25,7 @@ const YourForecast = () => {
     try {
       const url = "/api/forecast";
       const body = {
-        id: userId,
+        id: user.id,
         name: name,
         forecast: forecast,
       };
@@ -45,10 +40,8 @@ const YourForecast = () => {
       const result = await response.json();
       if (response.ok) {
         setError("");
-        if (!userId) {
-          localStorage.setItem(LOCAL_STORAGE_KEY_NAME, name);
-          localStorage.setItem(LOCAL_STORAGE_KEY_ID, result.id);
-          setUserId(result.id);
+        if (!user.id) {
+          saveUser({ id: result.id, name: name });
         }
       } else if (result.code === 3) {
         setError(result.msg);
