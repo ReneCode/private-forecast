@@ -2,6 +2,7 @@ import * as admin from "firebase-admin";
 import { nanoid } from "nanoid";
 
 export const FACT_ID = "FACT";
+const RANKING_ID = "RANKING";
 
 let fireStoreDatabase: FirebaseFirestore.Firestore = null;
 
@@ -152,7 +153,79 @@ export const getHost = () => {
   }
 };
 
-export const createReport = (
+export const createReport = async (
   db: FirebaseFirestore.Firestore,
-  docId: string
-) => {};
+  dateId: string,
+  factNr: number
+) => {
+  const docRef = collection(db, dateId);
+  const snapshot = await docRef.get();
+  const allData: {
+    nr: number;
+    name: string;
+    id: string;
+    delta: number;
+    absDelta: number;
+    rank: number;
+  }[] = [];
+  snapshot.forEach((doc) => {
+    const data = doc.data();
+    if (doc.id === FACT_ID) {
+      factNr = data.nr;
+    } else {
+      allData.push({
+        nr: data.nr,
+        name: data.name,
+        id: doc.id,
+        delta: 0,
+        absDelta: 0,
+        rank: 0,
+      });
+    }
+  });
+
+  if (allData.length === 0 || factNr === undefined || isNaN(factNr)) {
+    return false;
+  }
+
+  for (let data of allData) {
+    data.absDelta = Math.abs(factNr - data.nr);
+    data.delta = factNr - data.nr;
+  }
+
+  allData.sort((a, b) => {
+    if (a.absDelta !== b.absDelta) {
+      return a.absDelta - b.absDelta;
+    } else {
+      return a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1;
+    }
+  });
+
+  let rank = 1;
+  let lastAbsDelta = allData[0].absDelta;
+  for (let data of allData) {
+    if (lastAbsDelta !== data.absDelta) {
+      lastAbsDelta = data.absDelta;
+      rank++;
+    }
+    data.rank = rank;
+
+    const dataRef = collection(db, dateId).doc(data.id);
+    await dataRef.update({ rank: rank });
+  }
+
+  const ranking = allData.map((data) => {
+    return {
+      rank: data.rank,
+      name: data.name,
+      nr: data.nr,
+    };
+  });
+
+  const result = { fact: factNr, ranking: ranking, dateId: dateId };
+
+  const rankingRef = collection(db, dateId).doc(RANKING_ID);
+  await rankingRef.set(result);
+
+  return result;
+};

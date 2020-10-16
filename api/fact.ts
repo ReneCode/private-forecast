@@ -68,8 +68,9 @@ const postFact = async (req: NowRequest, res: NowResponse) => {
     stage,
     rkiDate,
   });
+
   if (created) {
-    createReport(db, dateId);
+    await createReport(db, dateId, nr);
   }
 
   res.status(200).json({
