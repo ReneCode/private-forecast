@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./App.scss";
-import CurrentNumber from "./CurrentNumber";
-import Summarize from "./Summarize";
+import RealData from "./RealData";
 import {
   dateToDateId,
   getDate,
@@ -36,11 +35,7 @@ function App() {
         dateId={dateToDateId(getDate())}
         saveUser={(user) => onSaveUser(user)}
       />
-      <Summarize
-        dateId={dateToDateId(getDate(-1))}
-        title="Vortag"
-        user={user}
-      />
+      <RealData dateId={dateToDateId(getDate(-1))} title="Vortag" user={user} />
     </div>
   );
 }

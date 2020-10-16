@@ -7,7 +7,7 @@ type Props = {
   dateId: string;
   user: UserType;
 };
-const Summarize: React.FC<Props> = ({ title, dateId, user }) => {
+const RealData: React.FC<Props> = ({ title, dateId, user }) => {
   const [fact, setFact] = useState(0);
   const [forecast, setForecast] = useState(0);
 
@@ -45,15 +45,15 @@ const Summarize: React.FC<Props> = ({ title, dateId, user }) => {
       <div className="inset">
         <p>
           <label htmlFor="fact">Realität:</label>
-          <input id="fact" type="number" value={fact} />
+          <input id="fact" readOnly type="number" value={fact} />
         </p>
         <p>
-          <label htmlFor="fact">Your forecast:</label>
-          <input id="fact" type="number" value={forecast} />
+          <label htmlFor="fact">Meine Prognose:</label>
+          <input id="fact" readOnly type="number" value={forecast} />
         </p>
       </div>
     </div>
   );
 };
 
-export default Summarize;
+export default RealData;
