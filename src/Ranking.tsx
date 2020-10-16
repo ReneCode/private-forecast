@@ -1,43 +1,47 @@
 import React, { useEffect, useState } from "react";
 
-const CurrentNumber = () => {
-  const [result, setResult] = useState([]);
+type Props = {
+  dateId: string;
+};
+const Ranking: React.FC<Props> = ({ dateId }) => {
+  const [ranking, setRanking] = useState([]);
 
   useEffect(() => {
-    const readData = async () => {
-      const url = "/api/grabhtml";
-      const body = {
-        url:
-          "https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Fallzahlen.html",
-        regex: [
-          "<p>Stand: (.*) \\(online aktualisiert.*",
-          ".*Gesamt.*<\\/td>.*<strong>(.*)<\\/strong>.*<strong>(.*)<\\/strong>.*<strong>(.*)<\\/strong>.*<strong>(.*)<\\/strong>.*.*<strong>(.*)<\\/strong>.*<\\/tbody>",
-        ],
-      };
-      const response = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
-      });
-      const result = await response.json();
-      setResult(result);
+    const loadRanking = async () => {
+      const query = new URLSearchParams({ dateId: dateId });
+      const url = `/api/ranking?${query}`;
+      const response = await fetch(url);
+      if (response.ok) {
+        const doc = await response.json();
+        if (doc && doc.ranking) {
+          setRanking(doc.ranking);
+        }
+      }
     };
-    readData();
-  }, []);
 
-  if (result.length >= 6) {
-    return (
-      <div>
-        <p>Date: {result[0]}</p>
-        <p>All: {result[1]}</p>
-        <p>Delta: {result[2]}</p>
-      </div>
-    );
-  } else {
+    loadRanking();
+  }, [dateId]);
+
+  if (ranking.length === 0) {
     return null;
   }
+
+  return (
+    <div className="form">
+      <h2>Top 100</h2>
+      <div className="inset ranking">
+        {ranking.map((line: any, idx: number) => {
+          return (
+            <React.Fragment key={idx}>
+              <div>{line.rank}</div>
+              <div>{line.name}</div>
+              <div className="right">{line.nr}</div>
+            </React.Fragment>
+          );
+        })}
+      </div>
+    </div>
+  );
 };
 
-export default CurrentNumber;
+export default Ranking;

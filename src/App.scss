@@ -13,10 +13,6 @@
   color: #e22;
 }
 
-.readonly {
-  readonly: true;
-}
-
 .form {
   background: rgba(#bbb, 0.8);
   position: relative;
@@ -79,4 +75,15 @@
       }
     }
   }
+}
+.ranking {
+  display: grid;
+  grid-template-columns: 30px auto 60px;
+  div {
+    margin: 2px 0 2px;
+  }
+}
+
+.right {
+  text-align: right;
 }

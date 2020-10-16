@@ -2,7 +2,7 @@ import * as admin from "firebase-admin";
 import { nanoid } from "nanoid";
 
 export const FACT_ID = "FACT";
-const RANKING_ID = "RANKING";
+export const RANKING_ID = "RANKING";
 
 let fireStoreDatabase: FirebaseFirestore.Firestore = null;
 
@@ -170,17 +170,21 @@ export const createReport = async (
   }[] = [];
   snapshot.forEach((doc) => {
     const data = doc.data();
-    if (doc.id === FACT_ID) {
-      factNr = data.nr;
-    } else {
-      allData.push({
-        nr: data.nr,
-        name: data.name,
-        id: doc.id,
-        delta: 0,
-        absDelta: 0,
-        rank: 0,
-      });
+    switch (doc.id) {
+      case FACT_ID:
+        factNr = data.nr;
+        break;
+      case RANKING_ID:
+        break;
+      default:
+        allData.push({
+          nr: data.nr,
+          name: data.name,
+          id: doc.id,
+          delta: 0,
+          absDelta: 0,
+          rank: 0,
+        });
     }
   });
 

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./App.scss";
+import Ranking from "./Ranking";
 import RealData from "./RealData";
 import {
   dateToDateId,
@@ -36,6 +37,7 @@ function App() {
         saveUser={(user) => onSaveUser(user)}
       />
       <RealData dateId={dateToDateId(getDate(-1))} title="Vortag" user={user} />
+      <Ranking dateId={dateToDateId(getDate(-1))} />
     </div>
   );
 }

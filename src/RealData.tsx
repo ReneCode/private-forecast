@@ -37,7 +37,7 @@ const RealData: React.FC<Props> = ({ title, dateId, user }) => {
     };
     loadFact();
     loadForecast();
-  }, [user]);
+  }, [dateId, user]);
 
   return (
     <div className="form">

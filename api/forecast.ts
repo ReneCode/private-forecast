@@ -89,10 +89,10 @@ const getForecast = async (req: NowRequest, res: NowResponse) => {
     if (doc) {
       res.json({ nr: doc.nr });
     } else {
-      res.status(404).send(null);
+      res.json(null);
     }
   } else {
-    res.status(400).send(null);
+    res.status(400).json(null);
   }
 };
 
