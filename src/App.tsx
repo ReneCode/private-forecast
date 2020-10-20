@@ -10,27 +10,30 @@ import {
   UserType,
 } from "./utils";
 import YourForecast from "./YourForecast";
-
 function App() {
   const [user, setUser] = useState<UserType>((null as unknown) as UserType);
-
   useEffect(() => {
     const storedUser = loadUserFromLocalStorage();
     setUser(storedUser);
   }, []);
-
   const onSaveUser = (user: UserType) => {
     saveUserToLoacalStorage(user);
     setUser(user);
   };
-
   if (!user) {
     return <div>Loading ...</div>;
   }
   return (
     <div className="App">
-      {/* <h1>private forecast</h1> */}
-      {/* <CurrentNumber /> */}
+      <div className="center">
+        <h1>COVID-19 Private Prognose</h1>
+        <h3>
+          Tippe die Gesamtzahl der Neuinfektionen für Deutschland. Daten von{" "}
+          <a href="https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Fallzahlen.html">
+            rki.de
+          </a>
+        </h3>
+      </div>
       <YourForecast
         user={user}
         dateId={dateToDateId(getDate())}
@@ -41,5 +44,4 @@ function App() {
     </div>
   );
 }
-
 export default App;

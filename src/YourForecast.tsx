@@ -110,7 +110,7 @@ const YourForecast: React.FC<Props> = ({ user, dateId, saveUser }) => {
           />
         </p>
         <p>
-          <label htmlFor="forecast">Neuinfektionen zum Vortag:</label>
+          <label htmlFor="forecast">Neuinfektionen:</label>
           <input
             id="forecast"
             type="number"
