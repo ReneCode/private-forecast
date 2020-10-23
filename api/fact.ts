@@ -1,14 +1,13 @@
 import { NowRequest, NowResponse } from "@vercel/node";
+import { rkiFetchDate, rkiGetNeuerFall } from "./rkiFetch";
 import {
   getFireStore,
-  getHost,
   shiftDate,
   createReport,
   saveData,
   FACT_ID,
   loadData,
 } from "./utils";
-import fetch from "node-fetch";
 
 const fact = async (req: NowRequest, res: NowResponse) => {
   try {
@@ -28,6 +27,7 @@ const fact = async (req: NowRequest, res: NowResponse) => {
 };
 
 const postFact = async (req: NowRequest, res: NowResponse) => {
+  /*  
   const apiUrl = getHost();
   const url = `${apiUrl}/api/grabhtml`;
   const body = {
@@ -59,6 +59,24 @@ const postFact = async (req: NowRequest, res: NowResponse) => {
   // take nr from website
   const delta = result[2].replace("+", "").replace(".", "");
   const nr = parseInt(delta);
+*/
+
+  // let { rkiDate, sNr } = req.body;
+
+  const rkiDate = await rkiFetchDate();
+  const sNr = await rkiGetNeuerFall();
+
+  if (!rkiDate || !sNr) {
+    res.status(400).send({ rkiDate, sNr });
+    return;
+  }
+
+  const [_, day, month, year] = /(\d*)\.(\d*)\.(\d*)/.exec(rkiDate);
+  const dateOfData = new Date(parseInt(year), parseInt(month), parseInt(day));
+  const prevDate = shiftDate(dateOfData, -1);
+  const dateId = `${prevDate.getFullYear()}-${prevDate.getMonth()}-${prevDate.getDate()}`;
+
+  const nr = parseInt(sNr);
 
   const stage = process.env.STAGE;
 
