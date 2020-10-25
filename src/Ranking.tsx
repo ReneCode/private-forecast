@@ -28,8 +28,8 @@ const Ranking: React.FC<Props> = ({ dateId }) => {
 
   return (
     <div className="form">
-      <h2>Top 100</h2>
-      <div className="inset ranking">
+      <h3>Top 100</h3>
+      <div className="inset col3">
         {ranking.map((line: any, idx: number) => {
           return (
             <React.Fragment key={idx}>

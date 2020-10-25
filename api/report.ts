@@ -1,5 +1,5 @@
 import { NowRequest, NowResponse } from "@vercel/node";
-import { createRankingWeek, getDateNow } from "./utils";
+import { createRankingWeek } from "./utils";
 import { getFireStore } from "./utils";
 
 const report = async (req: NowRequest, res: NowResponse) => {

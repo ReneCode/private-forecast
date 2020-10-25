@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./App.scss";
 import Ranking from "./Ranking";
-import RealData from "./RealData";
+import Yesterday from "./Yesterday";
 import {
   dateToDateId,
   getDate,
@@ -9,7 +9,7 @@ import {
   saveUserToLoacalStorage,
   UserType,
 } from "./utils";
-import YourForecast from "./YourForecast";
+import Today from "./Today";
 function App() {
   const [user, setUser] = useState<UserType>((null as unknown) as UserType);
   useEffect(() => {
@@ -28,18 +28,21 @@ function App() {
       <div className="center">
         <h1>COVID-19 Private Prognose</h1>
         <h3>
-          Tippe die Gesamtzahl der Neuinfektionen für Deutschland. Daten von{" "}
-          <a href="https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Fallzahlen.html">
-            rki.de
-          </a>
+          Tippe die Gesamtzahl der Neuinfektionen für Deutschland. Daten vom{" "}
+          <a href="https://corona.rki.de">rki.de</a>
         </h3>
       </div>
-      <YourForecast
+      <Today
         user={user}
+        title="Heute"
         dateId={dateToDateId(getDate())}
         saveUser={(user) => onSaveUser(user)}
       />
-      <RealData dateId={dateToDateId(getDate(-1))} title="Vortag" user={user} />
+      <Yesterday
+        dateId={dateToDateId(getDate(-1))}
+        title="Gestern"
+        user={user}
+      />
       <Ranking dateId={dateToDateId(getDate(-1))} />
     </div>
   );

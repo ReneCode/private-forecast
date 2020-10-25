@@ -7,7 +7,7 @@ type Props = {
   dateId: string;
   user: UserType;
 };
-const RealData: React.FC<Props> = ({ title, dateId, user }) => {
+const Yesterday: React.FC<Props> = ({ title, dateId, user }) => {
   const [fact, setFact] = useState(0);
   const [forecast, setForecast] = useState(0);
 
@@ -41,19 +41,15 @@ const RealData: React.FC<Props> = ({ title, dateId, user }) => {
 
   return (
     <div className="form">
-      <h2>{title}</h2>
-      <div className="inset">
-        <p>
-          <label htmlFor="fact">Realität:</label>
-          <input id="fact" readOnly type="number" value={fact} />
-        </p>
-        <p>
-          <label htmlFor="fact">Meine Prognose:</label>
-          <input id="fact" readOnly type="number" value={forecast} />
-        </p>
+      <h3>{title}</h3>
+      <div className="inset col2">
+        <label htmlFor="fact">Realität:</label>
+        <input id="fact" readOnly type="number" value={fact} />
+        <label htmlFor="fact">Prognose:</label>
+        <input id="fact" readOnly type="number" value={forecast} />
       </div>
     </div>
   );
 };
 
-export default RealData;
+export default Yesterday;

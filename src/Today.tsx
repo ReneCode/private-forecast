@@ -1,16 +1,16 @@
-import { read } from "fs";
 import React, { useEffect, useState } from "react";
 import Loading from "./Loading";
 import { UserType } from "./utils";
 
-import "./YourForecast.scss";
+import "./Today.scss";
 
 type Props = {
   user: UserType;
   dateId: string;
+  title: string;
   saveUser: (user: UserType) => void;
 };
-const YourForecast: React.FC<Props> = ({ user, dateId, saveUser }) => {
+const YourForecast: React.FC<Props> = ({ user, dateId, title, saveUser }) => {
   const [name, setName] = useState("");
   const [forecast, setForecast] = useState(0);
   const [error, setError] = useState("");
@@ -96,28 +96,24 @@ const YourForecast: React.FC<Props> = ({ user, dateId, saveUser }) => {
 
   return (
     <div className="form">
-      <h2>Meine Prognose</h2>
-      <div className="inset">
+      <h3>{title}</h3>
+      <div className="inset col2">
         {error && <div className="error">{error}</div>}
-        <p>
-          <label htmlFor="name">Name:</label>
-          <input
-            readOnly={!!user.id}
-            id="name"
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-        </p>
-        <p>
-          <label htmlFor="forecast">Neuinfektionen:</label>
-          <input
-            id="forecast"
-            type="number"
-            value={forecast}
-            onChange={(e) => setForecast(parseInt(e.target.value))}
-          />
-        </p>
+        <label htmlFor="name">Name:</label>
+        <input
+          readOnly={!!user.id}
+          id="name"
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+        <label htmlFor="forecast">Prognose:</label>
+        <input
+          id="forecast"
+          type="number"
+          value={forecast}
+          onChange={(e) => setForecast(parseInt(e.target.value))}
+        />
       </div>
 
       <div className="action">
