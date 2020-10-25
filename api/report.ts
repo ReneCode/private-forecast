@@ -1,14 +1,26 @@
 import { NowRequest, NowResponse } from "@vercel/node";
-import { createReport } from "./utils";
+import { createRankingWeek, getDateNow } from "./utils";
 import { getFireStore } from "./utils";
 
 const report = async (req: NowRequest, res: NowResponse) => {
-  const dateId = req.query.dateId as string;
+  try {
+    switch (req.method) {
+      case "POST":
+        await postReport(req, res);
+        break;
+      default:
+        res.send(404).send(null);
+    }
+  } catch (err) {
+    res.send(`Error: ${err}`);
+  }
+};
 
-  const nr = parseInt(req.query.nr as string);
+const postReport = async (req: NowRequest, res: NowResponse) => {
   const db = getFireStore();
+  const result = await createRankingWeek(db);
 
-  const result = await createReport(db, dateId, nr);
   res.json(result);
 };
+
 export default report;

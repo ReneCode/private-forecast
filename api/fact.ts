@@ -3,7 +3,7 @@ import { rkiFetchDate, rkiGetNeuerFall } from "./rkiFetch";
 import {
   getFireStore,
   shiftDate,
-  createReport,
+  createRanking,
   saveData,
   FACT_ID,
   loadData,
@@ -88,7 +88,7 @@ const postFact = async (req: NowRequest, res: NowResponse) => {
   });
 
   if (created) {
-    await createReport(db, dateId, nr);
+    await createRanking(db, dateId);
   }
 
   res.status(200).json({

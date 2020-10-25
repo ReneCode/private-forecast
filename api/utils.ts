@@ -3,6 +3,7 @@ import { nanoid } from "nanoid";
 
 export const FACT_ID = "FACT";
 export const RANKING_ID = "RANKING";
+export const RANKING_WEEK_ID = "RANKING_WEEK";
 
 let fireStoreDatabase: FirebaseFirestore.Firestore = null;
 
@@ -153,11 +154,8 @@ export const getHost = () => {
   }
 };
 
-export const createReport = async (
-  db: FirebaseFirestore.Firestore,
-  dateId: string,
-  factNr: number
-) => {
+const loadAllData = async (db: FirebaseFirestore.Firestore, dateId: string) => {
+  let factNr = undefined;
   const docRef = collection(db, dateId);
   const snapshot = await docRef.get();
   const allData: {
@@ -175,6 +173,7 @@ export const createReport = async (
         factNr = data.nr;
         break;
       case RANKING_ID:
+      case RANKING_WEEK_ID:
         break;
       default:
         allData.push({
@@ -187,6 +186,96 @@ export const createReport = async (
         });
     }
   });
+
+  return { factNr, allData };
+};
+
+export const createRankingWeek = async (db: FirebaseFirestore.Firestore) => {
+  const all: Map<
+    string,
+    {
+      name: string;
+      id: string;
+      sumAbsDelta: number;
+      count: number;
+    }
+  > = new Map();
+
+  const cntDays = 7;
+  for (let i = 1; i <= cntDays; i++) {
+    const dateId = getDateNow(-1 * i);
+    const { factNr, allData } = await loadAllData(db, dateId);
+    for (let data of allData) {
+      const userId = data.id;
+      const absDelta = Math.abs((factNr ? factNr : 0) - data.nr);
+      if (!all.has(userId)) {
+        all.set(userId, {
+          id: userId,
+          name: data.name,
+          sumAbsDelta: absDelta,
+          count: 1,
+        });
+      } else {
+        const d = all.get(userId);
+        d.count += 1;
+        d.sumAbsDelta += absDelta;
+      }
+    }
+  }
+
+  // calc mean of absDelta
+  const ranking: { name: string; sortAbsDelta: number; rank: number }[] = [];
+  all.forEach((value) => {
+    const count = value.count;
+    // TODO ??  may be +1 because that the penaltyFactor will be working even in the delte is 0
+    // const meanAbsDelta = (value.sumAbsDelta + 1) / count;
+    const meanAbsDelta = value.sumAbsDelta / count;
+    // 0 missing-tip => * 1
+    // 1 missing-tip => * 2
+    // 2 missing-tip => * 3
+    const penaltyFactor = cntDays - count + 1;
+    ranking.push({
+      name: value.name,
+      sortAbsDelta: meanAbsDelta * penaltyFactor,
+      rank: 0,
+    });
+  });
+
+  ranking.sort((a, b) => {
+    if (a.sortAbsDelta !== b.sortAbsDelta) {
+      return a.sortAbsDelta - b.sortAbsDelta;
+    } else {
+      return a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1;
+    }
+  });
+
+  if (ranking.length > 0) {
+    let rank = 1;
+    let lastSortAbsDelta = ranking[0].sortAbsDelta;
+    for (let tip of ranking) {
+      if (lastSortAbsDelta !== tip.sortAbsDelta) {
+        lastSortAbsDelta = tip.sortAbsDelta;
+        rank++;
+      }
+      tip.rank = rank;
+    }
+  }
+
+  const dateId = getDateNow(-1);
+
+  const result = { ranking: ranking, dateId: dateId };
+
+  const rankingRef = collection(db, dateId).doc(RANKING_WEEK_ID);
+  await rankingRef.set(result);
+
+  return result;
+};
+
+export const createRanking = async (
+  db: FirebaseFirestore.Firestore,
+  dateId: string
+) => {
+  const { factNr, allData } = await loadAllData(db, dateId);
 
   if (allData.length === 0 || factNr === undefined || isNaN(factNr)) {
     return false;
@@ -233,3 +322,16 @@ export const createReport = async (
 
   return result;
 };
+
+export function getRankingId(type: string | string[]) {
+  let id: string = "";
+  switch (type) {
+    case "week":
+      id = RANKING_WEEK_ID;
+      break;
+    default:
+      id = RANKING_ID;
+      break;
+  }
+  return id;
+}

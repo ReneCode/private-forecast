@@ -1,14 +1,5 @@
 import { NowRequest, NowResponse } from "@vercel/node";
-import {
-  getFireStore,
-  getHost,
-  shiftDate,
-  createReport,
-  saveData,
-  FACT_ID,
-  loadData,
-  RANKING_ID,
-} from "./utils";
+import { getFireStore, getRankingId, loadData } from "./utils";
 
 const fact = async (req: NowRequest, res: NowResponse) => {
   try {
@@ -26,9 +17,11 @@ const fact = async (req: NowRequest, res: NowResponse) => {
 
 const getRanking = async (req: NowRequest, res: NowResponse) => {
   const dateId = req.query.dateId as string;
+  const type = req.query.type;
   if (dateId) {
     const db = getFireStore();
-    const doc = await loadData(db, dateId, RANKING_ID);
+    let id: string = getRankingId(type);
+    const doc = await loadData(db, dateId, id);
     if (doc) {
       res.json(doc);
     } else {
