@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import "./App.scss";
-import Ranking from "./Ranking";
 import Yesterday from "./Yesterday";
 import {
   dateToDateId,
@@ -10,6 +9,8 @@ import {
   UserType,
 } from "./utils";
 import Today from "./Today";
+import RankingYesterday from "./RankingYesterday";
+import RankingLastWeek from "./RankingLastWeek";
 function App() {
   const [user, setUser] = useState<UserType>((null as unknown) as UserType);
   useEffect(() => {
@@ -43,7 +44,8 @@ function App() {
         title="Gestern"
         user={user}
       />
-      <Ranking dateId={dateToDateId(getDate(-1))} />
+      <RankingYesterday dateId={dateToDateId(getDate(-1))} />
+      <RankingLastWeek dateId={dateToDateId(getDate(-1))} />
     </div>
   );
 }

@@ -7,6 +7,7 @@ import {
   saveData,
   FACT_ID,
   loadData,
+  createRankingWeek,
 } from "./utils";
 
 const fact = async (req: NowRequest, res: NowResponse) => {
@@ -89,6 +90,7 @@ const postFact = async (req: NowRequest, res: NowResponse) => {
 
   if (created) {
     await createRanking(db, dateId);
+    await createRankingWeek(db);
   }
 
   res.status(200).json({
