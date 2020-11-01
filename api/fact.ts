@@ -28,42 +28,6 @@ const fact = async (req: NowRequest, res: NowResponse) => {
 };
 
 const postFact = async (req: NowRequest, res: NowResponse) => {
-  /*  
-  const apiUrl = getHost();
-  const url = `${apiUrl}/api/grabhtml`;
-  const body = {
-    url:
-      "https://www.rki.de/DE/Content/InfAZ/N/Neuartiges_Coronavirus/Fallzahlen.html",
-    regex: [
-      "<p>Stand: (.*) \\(online aktualisiert.*",
-      ".*Gesamt.*<\\/td>.*<strong>(.*)<\\/strong>.*<strong>(.*)<\\/strong>.*<strong>(.*)<\\/strong>.*<strong>(.*)<\\/strong>.*.*<strong>(.*)<\\/strong>.*<\\/tbody>",
-    ],
-  };
-  const response = await fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(body),
-  });
-  const result = await response.json();
-
-  // take date from website
-  // "17.10.2020"
-  // store as previous day => "2020-10-16"
-  const rkiDate = result[0];
-  const [_, day, month, year] = /(\d*)\.(\d*)\.(\d*)/.exec(rkiDate);
-  const dateOfData = new Date(parseInt(year), parseInt(month), parseInt(day));
-  const prevDate = shiftDate(dateOfData, -1);
-  const dateId = `${prevDate.getFullYear()}-${prevDate.getMonth()}-${prevDate.getDate()}`;
-
-  // take nr from website
-  const delta = result[2].replace("+", "").replace(".", "");
-  const nr = parseInt(delta);
-*/
-
-  // let { rkiDate, sNr } = req.body;
-
   const rkiDate = await rkiFetchDate();
   const sNr = await rkiGetNeuerFall();
 
@@ -73,10 +37,17 @@ const postFact = async (req: NowRequest, res: NowResponse) => {
   }
 
   const [_, day, month, year] = /(\d*)\.(\d*)\.(\d*)/.exec(rkiDate);
-  const dateOfData = new Date(parseInt(year), parseInt(month), parseInt(day));
+  // month is 0-based, 0=januar
+  const dateOfData = new Date(
+    parseInt(year),
+    parseInt(month) - 1,
+    parseInt(day)
+  );
   const prevDate = shiftDate(dateOfData, -1);
-  const dateId = `${prevDate.getFullYear()}-${prevDate.getMonth()}-${prevDate.getDate()}`;
-
+  // month is 0-based, 0=januar
+  const dateId = `${prevDate.getFullYear()}-${
+    prevDate.getMonth() + 1
+  }-${prevDate.getDate()}`;
   const nr = parseInt(sNr);
 
   const stage = process.env.STAGE;

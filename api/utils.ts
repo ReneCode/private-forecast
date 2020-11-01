@@ -13,6 +13,7 @@ const collection = (db: FirebaseFirestore.Firestore, name: string) => {
 
 export const getDateNow = (dayDelta: number = 0) => {
   const dt = new Date(Date.now() + 24 * 60 * 60 * 1000 * dayDelta);
+  // month is 0-based, 0=januar
   return `${dt.getUTCFullYear()}-${dt.getUTCMonth() + 1}-${dt.getUTCDate()}`;
 };
 
