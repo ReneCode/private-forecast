@@ -28,8 +28,12 @@ const fact = async (req: NowRequest, res: NowResponse) => {
 };
 
 const postFact = async (req: NowRequest, res: NowResponse) => {
+  let sNr = req.query.sNr;
+
   const rkiDate = await rkiFetchDate();
-  const sNr = await rkiGetNeuerFall();
+  if (!sNr) {
+    sNr = await rkiGetNeuerFall();
+  }
 
   if (!rkiDate || !sNr) {
     res.status(400).send({ rkiDate, sNr });
