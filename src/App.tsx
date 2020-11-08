@@ -44,8 +44,8 @@ function App() {
         title="Gestern"
         user={user}
       />
-      <RankingYesterday dateId={dateToDateId(getDate(-1))} />
-      <RankingLastWeek dateId={dateToDateId(getDate(-1))} />
+      <RankingYesterday user={user} dateId={dateToDateId(getDate(-1))} />
+      <RankingLastWeek user={user} dateId={dateToDateId(getDate(-1))} />
     </div>
   );
 }

@@ -225,7 +225,12 @@ export const createRankingWeek = async (db: FirebaseFirestore.Firestore) => {
   }
 
   // calc mean of absDelta
-  const ranking: { name: string; sortAbsDelta: number; rank: number }[] = [];
+  const ranking: {
+    id: string;
+    name: string;
+    sortAbsDelta: number;
+    rank: number;
+  }[] = [];
   all.forEach((value) => {
     const count = value.count;
     // TODO ??  may be +1 because that the penaltyFactor will be working even in the delte is 0
@@ -236,6 +241,7 @@ export const createRankingWeek = async (db: FirebaseFirestore.Firestore) => {
     // 2 missing-tip => * 3
     const penaltyFactor = cntDays - count + 1;
     ranking.push({
+      id: value.id,
       name: value.name,
       sortAbsDelta: meanAbsDelta * penaltyFactor,
       rank: 0,
@@ -310,6 +316,7 @@ export const createRanking = async (
 
   const ranking = allData.map((data) => {
     return {
+      id: data.id,
       rank: data.rank,
       name: data.name,
       nr: data.nr,

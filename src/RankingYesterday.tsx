@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { UserType } from "./utils";
 
 type Props = {
   dateId: string;
+  user: UserType;
 };
-const RankingYesterday: React.FC<Props> = ({ dateId }) => {
+const RankingYesterday: React.FC<Props> = ({ user, dateId }) => {
   const [ranking, setRanking] = useState([]);
 
   useEffect(() => {
@@ -31,11 +33,12 @@ const RankingYesterday: React.FC<Props> = ({ dateId }) => {
       <h3>Top - Gestern</h3>
       <div className="inset col3">
         {ranking.map((line: any, idx: number) => {
+          let className = line.id === user.id ? "selected" : "";
           return (
             <React.Fragment key={idx}>
-              <div>{line.rank}</div>
-              <div>{line.name}</div>
-              <div className="right">{line.nr}</div>
+              <div className={className}>{line.rank}</div>
+              <div className={className}>{line.name}</div>
+              <div className={`${className} right`}>{line.nr}</div>
             </React.Fragment>
           );
         })}
