@@ -35,7 +35,7 @@ const postFact = async (req: NowRequest, res: NowResponse) => {
     sNr = await rkiGetNeuerFall();
   }
 
-  const death = await rkiGetDeath();
+  const death = parseInt(await rkiGetDeath());
 
   if (!rkiDate || !sNr) {
     res.status(400).send({ rkiDate, sNr });
