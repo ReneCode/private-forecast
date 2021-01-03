@@ -32,6 +32,10 @@ function App() {
           Tippe die Gesamtzahl der Neuinfektionen für Deutschland. Daten vom{" "}
           <a href="https://corona.rki.de">rki.de</a>
         </h3>
+        <p>
+          Ideen zur Verbesserung:{" "}
+          <a href="mailto:privateforecast@googlemail.com">Send EMail</a>
+        </p>
       </div>
       <Today
         user={user}

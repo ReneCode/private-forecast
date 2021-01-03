@@ -89,10 +89,6 @@ const YourForecast: React.FC<Props> = ({ user, dateId, title, saveUser }) => {
   if (sending) {
     sendClass = "disable";
   }
-  let readonly = "";
-  if (user.id) {
-    readonly = "readonly";
-  }
 
   return (
     <div className="form">
