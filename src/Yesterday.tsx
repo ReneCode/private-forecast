@@ -23,7 +23,6 @@ const Yesterday: React.FC<Props> = ({ title, dateId, user }) => {
       const response = await fetch(url);
       if (response.ok) {
         const doc: ForecastType = await response.json();
-        console.log(">> fact", doc);
         if (doc) {
           setFact({ nr: doc?.nr, death: doc?.death });
         }
@@ -36,7 +35,6 @@ const Yesterday: React.FC<Props> = ({ title, dateId, user }) => {
       const response = await fetch(url);
       if (response.ok) {
         const doc: ForecastType = await response.json();
-        console.log(">> forecast", doc);
         if (doc) {
           setForecast({ nr: doc.nr, death: doc?.death });
         }

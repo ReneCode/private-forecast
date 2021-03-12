@@ -64,8 +64,9 @@ const postFact = async (req: NowRequest, res: NowResponse) => {
   });
 
   if (created) {
-    await createRanking(db, dateId);
-    await createRankingWeek(db);
+    await createRanking(db, dateId, "nr");
+    await createRanking(db, dateId, "death");
+    // await createRankingWeek(db);
   }
 
   res.status(200).json({

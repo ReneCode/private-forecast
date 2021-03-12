@@ -5,7 +5,13 @@ export const FACT_ID = "FACT";
 export const RANKING_ID = "RANKING";
 export const RANKING_WEEK_ID = "RANKING_WEEK";
 
+export type DataPropType = "nr" | "death";
+
 let fireStoreDatabase: FirebaseFirestore.Firestore;
+
+const RANING_DOCUMENT_ID = (dataProp: DataPropType) => {
+  return `${RANKING_ID}-${dataProp}`;
+};
 
 const collection = (db: FirebaseFirestore.Firestore, name: string) => {
   return db.collection(`${process.env.STAGE}/d/${name}`);
@@ -155,12 +161,16 @@ export const getHost = () => {
   }
 };
 
-const loadAllData = async (db: FirebaseFirestore.Firestore, dateId: string) => {
-  let factNr = undefined;
+const loadAllData = async (
+  db: FirebaseFirestore.Firestore,
+  dateId: string,
+  dataProp: DataPropType
+) => {
+  let factData = undefined;
   const docRef = collection(db, dateId);
   const snapshot = await docRef.get();
   const allData: {
-    nr: number;
+    data: number;
     name: string;
     id: string;
     delta: number;
@@ -169,26 +179,23 @@ const loadAllData = async (db: FirebaseFirestore.Firestore, dateId: string) => {
   }[] = [];
   snapshot.forEach((doc) => {
     const data = doc.data();
-    switch (doc.id) {
-      case FACT_ID:
-        factNr = data.nr;
-        break;
-      case RANKING_ID:
-      case RANKING_WEEK_ID:
-        break;
-      default:
-        allData.push({
-          nr: data.nr,
-          name: data.name,
-          id: doc.id,
-          delta: 0,
-          absDelta: 0,
-          rank: 0,
-        });
+    if (doc.id === FACT_ID) {
+      factData = data[dataProp];
+    } else if (doc.id.startsWith(RANKING_ID)) {
+      //ignore
+    } else {
+      allData.push({
+        data: data[dataProp],
+        name: data.name,
+        id: doc.id,
+        delta: 0,
+        absDelta: 0,
+        rank: 0,
+      });
     }
   });
 
-  return { factNr, allData };
+  return { factData, allData };
 };
 
 export const createRankingWeek = async (db: FirebaseFirestore.Firestore) => {
@@ -280,17 +287,17 @@ export const createRankingWeek = async (db: FirebaseFirestore.Firestore) => {
 
 export const createRanking = async (
   db: FirebaseFirestore.Firestore,
-  dateId: string
+  dateId: string,
+  dataProp: DataPropType
 ) => {
-  const { factNr, allData } = await loadAllData(db, dateId);
-
-  if (allData.length === 0 || factNr === undefined || isNaN(factNr)) {
+  const { factData, allData } = await loadAllData(db, dateId, dataProp);
+  if (allData.length === 0 || factData === undefined || isNaN(factData)) {
     return false;
   }
 
   for (let data of allData) {
-    data.absDelta = Math.abs(factNr - data.nr);
-    data.delta = factNr - data.nr;
+    data.delta = factData - data.data;
+    data.absDelta = Math.abs(data.delta);
   }
 
   allData.sort((a, b) => {
@@ -310,35 +317,37 @@ export const createRanking = async (
     }
     data.rank = rank;
 
-    const dataRef = collection(db, dateId).doc(data.id);
-    await dataRef.update({ rank: rank });
+    // do not set rank on the user
+    // const dataRef = collection(db, dateId).doc(data.id);
+    // await dataRef.update({ rank: rank });
   }
 
   const ranking = allData.map((data) => {
-    return {
+    const r = {
       id: data.id,
       rank: data.rank,
       name: data.name,
-      nr: data.nr,
     };
+    r[dataProp] = data.data;
+    return r;
   });
 
-  const result = { fact: factNr, ranking: ranking, dateId: dateId };
+  const result = { fact: factData, ranking: ranking, dateId: dateId };
 
-  const rankingRef = collection(db, dateId).doc(RANKING_ID);
+  const rankingRef = collection(db, dateId).doc(RANING_DOCUMENT_ID(dataProp));
   await rankingRef.set(result);
 
   return result;
 };
 
-export function getRankingId(type: string | string[]) {
+export function getRankingId(type: string | string[], dataProp: DataPropType) {
   let id: string = "";
   switch (type) {
     case "week":
       id = RANKING_WEEK_ID;
       break;
     default:
-      id = RANKING_ID;
+      id = RANING_DOCUMENT_ID(dataProp);
       break;
   }
   return id;
