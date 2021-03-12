@@ -5,7 +5,7 @@ export const FACT_ID = "FACT";
 export const RANKING_ID = "RANKING";
 export const RANKING_WEEK_ID = "RANKING_WEEK";
 
-let fireStoreDatabase: FirebaseFirestore.Firestore = null;
+let fireStoreDatabase: FirebaseFirestore.Firestore;
 
 const collection = (db: FirebaseFirestore.Firestore, name: string) => {
   return db.collection(`${process.env.STAGE}/d/${name}`);
