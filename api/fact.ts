@@ -89,7 +89,7 @@ const getFact = async (req: NowRequest, res: NowResponse) => {
     const db = getFireStore();
     const doc = await loadData(db, dateId, FACT_ID);
     if (doc) {
-      res.json({ nr: doc.nr });
+      res.json({ nr: doc.nr, death: doc.death });
     } else {
       res.status(404).send(null);
     }

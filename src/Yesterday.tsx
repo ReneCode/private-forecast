@@ -2,14 +2,19 @@ import React, { useEffect, useState } from "react";
 
 import { UserType } from "./utils";
 
+type ForecastType = {
+  nr: number;
+  death: number;
+};
+
 type Props = {
   title: string;
   dateId: string;
   user: UserType;
 };
 const Yesterday: React.FC<Props> = ({ title, dateId, user }) => {
-  const [fact, setFact] = useState(0);
-  const [forecast, setForecast] = useState(0);
+  const [fact, setFact] = useState<ForecastType>({ death: 0, nr: 0 });
+  const [forecast, setForecast] = useState<ForecastType>({ death: 0, nr: 0 });
 
   useEffect(() => {
     const loadFact = async () => {
@@ -17,9 +22,10 @@ const Yesterday: React.FC<Props> = ({ title, dateId, user }) => {
       const url = `/api/fact?${query}`;
       const response = await fetch(url);
       if (response.ok) {
-        const doc = await response.json();
-        if (doc && doc.nr) {
-          setFact(doc.nr);
+        const doc: ForecastType = await response.json();
+        console.log(">> fact", doc);
+        if (doc) {
+          setFact({ nr: doc?.nr, death: doc?.death });
         }
       }
     };
@@ -29,9 +35,10 @@ const Yesterday: React.FC<Props> = ({ title, dateId, user }) => {
       const url = `/api/forecast?${query}`;
       const response = await fetch(url);
       if (response.ok) {
-        const doc = await response.json();
-        if (doc && doc.nr) {
-          setForecast(doc.nr);
+        const doc: ForecastType = await response.json();
+        console.log(">> forecast", doc);
+        if (doc) {
+          setForecast({ nr: doc.nr, death: doc?.death });
         }
       }
     };
@@ -42,11 +49,26 @@ const Yesterday: React.FC<Props> = ({ title, dateId, user }) => {
   return (
     <div className="form">
       <h3>{title}</h3>
-      <div className="inset col2">
-        <label htmlFor="fact">Realität:</label>
-        <input id="fact" readOnly type="number" value={fact} />
-        <label htmlFor="fact">Prognose:</label>
-        <input id="fact" readOnly type="number" value={forecast} />
+      <div className="inset gridfr3">
+        {/* <label></label>
+        <div>Realität</div>
+        <div>Prognose</div>
+        <div>Infektionen:</div>
+        <input readOnly type="number" value={fact.nr} />
+        <input readOnly type="number" value={forecast.nr} />
+        <div>Todesfälle:</div>
+        <input readOnly type="number" value={fact.death} />
+        <input readOnly type="number" value={forecast.death} /> */}
+
+        <div></div>
+        <div>Infektionen</div>
+        <div>Todesfälle</div>
+        <div>Realität:</div>
+        <input readOnly type="number" value={fact.nr} />
+        <input readOnly type="number" value={fact.death} />
+        <div>Prognose:</div>
+        <input readOnly type="number" value={forecast.nr} />
+        <input readOnly type="number" value={forecast.death} />
       </div>
     </div>
   );

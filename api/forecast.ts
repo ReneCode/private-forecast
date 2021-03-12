@@ -26,7 +26,7 @@ const forecast = async (req: NowRequest, res: NowResponse) => {
 };
 
 const postForecast = async (req: NowRequest, res: NowResponse) => {
-  const { name, id, forecast } = req.body || {};
+  const { name, id, forecast, death } = req.body || {};
 
   if (!name) {
     res.status(400).send({ code: 5, msg: "name missing" });
@@ -58,8 +58,9 @@ const postForecast = async (req: NowRequest, res: NowResponse) => {
   }
 
   const forecastNr = parseInt(forecast);
-  if (isNaN(forecastNr)) {
-    res.status(400).json({ code: 2, msg: `bad forecast format` });
+  const deathNr = parseInt(death);
+  if (isNaN(forecastNr) || isNaN(deathNr)) {
+    res.status(400).json({ code: 2, msg: `bad forecast or death format` });
     return;
   }
 
@@ -69,6 +70,7 @@ const postForecast = async (req: NowRequest, res: NowResponse) => {
   const result = await saveData(db, dateId, userId, {
     name: name,
     nr: forecastNr,
+    death: deathNr,
   });
 
   if (!result) {
@@ -87,7 +89,7 @@ const getForecast = async (req: NowRequest, res: NowResponse) => {
     const db = getFireStore();
     const doc = await loadData(db, dateId, userId);
     if (doc) {
-      res.json({ nr: doc.nr });
+      res.json({ nr: doc.nr, death: doc.death });
     } else {
       res.json(null);
     }

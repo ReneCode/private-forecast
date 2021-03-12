@@ -13,6 +13,7 @@ type Props = {
 const YourForecast: React.FC<Props> = ({ user, dateId, title, saveUser }) => {
   const [name, setName] = useState("");
   const [forecast, setForecast] = useState(0);
+  const [death, setDeath] = useState(0);
   const [error, setError] = useState("");
   const [sending, setSending] = useState(false);
 
@@ -24,8 +25,9 @@ const YourForecast: React.FC<Props> = ({ user, dateId, title, saveUser }) => {
         const response = await fetch(url);
         if (response.ok) {
           const doc = await response.json();
-          if (doc && doc.nr) {
-            setForecast(doc.nr);
+          if (doc) {
+            setForecast(doc?.nr);
+            setDeath(doc?.death);
           }
         }
       };
@@ -48,6 +50,7 @@ const YourForecast: React.FC<Props> = ({ user, dateId, title, saveUser }) => {
       const body = {
         id: user.id,
         name: name,
+        death: death,
         forecast: forecast,
       };
 
@@ -93,22 +96,34 @@ const YourForecast: React.FC<Props> = ({ user, dateId, title, saveUser }) => {
   return (
     <div className="form">
       <h3>{title}</h3>
-      <div className="inset col2">
+      <div className="inset gridfr3">
         {error && <div className="error">{error}</div>}
         <label htmlFor="name">Name:</label>
         <input
+          className="grid-c24"
           readOnly={!!user.id}
           id="name"
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
-        <label htmlFor="forecast">Prognose:</label>
+
+        <div></div>
+        <label htmlFor="forecast">Infektionen</label>
+        <label htmlFor="death">Todesfälle</label>
+        <div>Prognose:</div>
         <input
           id="forecast"
           type="number"
           value={forecast}
           onChange={(e) => setForecast(parseInt(e.target.value))}
+        />
+
+        <input
+          id="death"
+          type="number"
+          value={death}
+          onChange={(e) => setDeath(parseInt(e.target.value))}
         />
       </div>
 
