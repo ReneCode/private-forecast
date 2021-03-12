@@ -1,5 +1,5 @@
 import { NowRequest, NowResponse } from "@vercel/node";
-import { rkiFetchDate, rkiGetDeath, rkiGetNeuerFall } from "./rkiFetch";
+import { rkiFetchDate, rkiGetDeath, rkiGetNr } from "./rkiFetch";
 import {
   getFireStore,
   shiftDate,
@@ -28,17 +28,15 @@ const fact = async (req: NowRequest, res: NowResponse) => {
 };
 
 const postFact = async (req: NowRequest, res: NowResponse) => {
-  let sNr = req.query.sNr as string;
+  // let sNr = req.query.sNr as string;
 
   const rkiDate = await rkiFetchDate();
-  if (!sNr) {
-    sNr = await rkiGetNeuerFall();
-  }
 
-  const death = parseInt(await rkiGetDeath());
+  const nr = await rkiGetNr();
+  const death = await rkiGetDeath();
 
-  if (!rkiDate || !sNr) {
-    res.status(400).send({ rkiDate, sNr });
+  if (!rkiDate) {
+    res.status(400).send({ rkiDate });
     return;
   }
 
@@ -54,7 +52,6 @@ const postFact = async (req: NowRequest, res: NowResponse) => {
   const dateId = `${prevDate.getFullYear()}-${
     prevDate.getMonth() + 1
   }-${prevDate.getDate()}`;
-  const nr = parseInt(sNr);
 
   const stage = process.env.STAGE;
 
